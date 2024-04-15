@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tenant-space
+
+---
+apiVersion: clustertemplate.openshift.io/v1alpha1
+kind: ClusterTemplateInstance
+metadata:
+  name: my-cluster
+  namespace: tenant-space
+spec:
+  clusterTemplateRef: hypershift-aws-template
+  parameters:
+    - name: ocpArch
+      value: amd64
+    - name: ocpVersion
+      value: "4.15.6"

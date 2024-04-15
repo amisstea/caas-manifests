@@ -1,0 +1,61 @@
+---
+apiVersion: clustertemplate.openshift.io/v1alpha1
+kind: Config
+metadata:
+  name: config
+spec:
+  argoCDNamespace: openshift-gitops
+
+---
+apiVersion: argoproj.io/v1beta1
+kind: ArgoCD
+metadata:
+ name: openshift-gitops
+ namespace: openshift-gitops
+spec:
+ resourceTrackingMethod: annotation
+
+---
+apiVersion: clustertemplate.openshift.io/v1alpha1
+kind: ClusterTemplate
+metadata:
+  name: hypershift-aws-template
+spec:
+  clusterDefinition: hypershift-aws-template-appset
+  # clusterSetup:
+  cost: 1
+
+---
+apiVersion: clustertemplate.openshift.io/v1alpha1
+kind: ClusterTemplateQuota
+metadata:
+  name: quota
+  namespace: clusters
+spec:
+  budget: 100
+  allowedTemplates:
+    - name: hypershift-aws-template
+      deleteAfter: 2h
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: hypershift-aws-template-appset
+  namespace: openshift-gitops
+spec:
+  generators:
+  - {}
+  template:
+    metadata: {}
+    spec:
+      destination:
+        namespace: clusters
+        server: '{{ url }}'
+      project: default
+      source:
+        chart: hypershift-aws-template
+        repoURL: https://amisstea.github.io/cluster-template-helm-charts/
+        targetRevision: 0.0.1
+      syncPolicy:
+        automated: {}
