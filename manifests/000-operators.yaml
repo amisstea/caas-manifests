@@ -5,6 +5,12 @@ metadata:
   name: multicluster-engine
 
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: caas-operators
+
+---
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
@@ -13,6 +19,13 @@ metadata:
 spec:
   targetNamespaces:
   - multicluster-engine
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: caas-operators
+  namespace: caas-operators
 
 ---
 apiVersion: operators.coreos.com/v1alpha1
@@ -25,4 +38,33 @@ spec:
   installPlanApproval: Automatic
   name: multicluster-engine
   source: redhat-operators
+  sourceNamespace: openshift-marketplace
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-gitops-operator
+  # OLM dependency resolution forces us to install the gitops operator and the CaaS operator in
+  # the same namespace. Otherwise, OLM will resolve and install the ArgoCD operator from the
+  # community catalog.
+  namespace: caas-operators
+spec:
+  channel: latest
+  installPlanApproval: Automatic
+  name: openshift-gitops-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: caas-operator
+  namespace: caas-operators
+spec:
+  channel: alpha
+  installPlanApproval: Automatic
+  name: cluster-aas-operator
+  source: community-operators
   sourceNamespace: openshift-marketplace
