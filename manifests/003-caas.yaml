@@ -5,6 +5,7 @@ metadata:
   name: config
 spec:
   argoCDNamespace: openshift-gitops
+  uiEnabled: false
 
 ---
 apiVersion: argoproj.io/v1beta1
@@ -23,6 +24,7 @@ metadata:
 spec:
   clusterDefinition: hypershift-aws-template-appset
   # clusterSetup:
+  skipClusterRegistration: true
   cost: 1
 
 ---
