@@ -13,7 +13,9 @@ metadata:
 spec:
   clusterTemplateRef: hypershift-aws-template
   parameters:
-    - name: ocpArch
-      value: amd64
-    - name: ocpVersion
+    - name: instanceType
+      value: m6g.large
+    - name: version
       value: "4.15.6"
+    - name: baseDomain
+      value: eaasdemo.com

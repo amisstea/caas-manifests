@@ -23,7 +23,6 @@ metadata:
   name: hypershift-aws-template
 spec:
   clusterDefinition: hypershift-aws-template-appset
-  # clusterSetup:
   skipClusterRegistration: true
   cost: 1
 
@@ -62,7 +61,7 @@ spec:
       project: default
       source:
         chart: hypershift-aws-template
-        repoURL: https://amisstea.github.io/cluster-template-helm-charts/
+        repoURL: https://konflux-ci.dev/cluster-template-charts/
         targetRevision: 0.0.1
       syncPolicy:
         automated: {}
