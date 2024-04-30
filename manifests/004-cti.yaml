@@ -17,5 +17,3 @@ spec:
       value: m6g.large
     - name: version
       value: "4.15.6"
-    - name: baseDomain
-      value: eaasdemo.com

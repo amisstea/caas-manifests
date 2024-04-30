@@ -63,5 +63,17 @@ spec:
         chart: hypershift-aws-template
         repoURL: https://konflux-ci.dev/cluster-template-charts/
         targetRevision: 0.0.1
+        helm:
+          parameters:
+            - name: baseDomain
+              value: eaasdemo.com
+            - name: region
+              value: us-east-1
+            - name: secret
+              value: hypershift
+            - name: serviceAccount
+              value: cluster-provisioner
+            - name: hypershiftImageTag
+              value: latest
       syncPolicy:
         automated: {}
