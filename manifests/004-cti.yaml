@@ -8,7 +8,7 @@ metadata:
 apiVersion: clustertemplate.openshift.io/v1alpha1
 kind: ClusterTemplateInstance
 metadata:
-  name: my-cluster
+  name: amisstea-cluster
   namespace: tenant-space
 spec:
   clusterTemplateRef: hypershift-aws-template
