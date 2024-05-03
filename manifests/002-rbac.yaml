@@ -8,10 +8,25 @@ metadata:
 
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: tenant-space
+  labels:
+    argocd.argoproj.io/managed-by: openshift-gitops
+
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cluster-provisioner
   namespace: clusters
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cluster-provisioner
+  namespace: tenant-space
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -19,25 +34,45 @@ kind: ClusterRole
 metadata:
   name: cluster-provisioner
 rules:
-- apiGroups: [""]
-  resources: ["namespaces"]
-  verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get", "watch", "list", "create", "update", "patch", "delete", "deletecollection"]
-- apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
-- apiGroups: ["hypershift.openshift.io"]
-  resources: ["hostedclusters"]
-  verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
-- apiGroups: ["hypershift.openshift.io"]
-  resources: ["nodepools"]
-  verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - "*"
+- apiGroups:
+  - hypershift.openshift.io
+  resources:
+  - hostedclusters
+  - nodepools
+  verbs:
+  - "*"
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: Role
+metadata:
+  name: oidc-configmap-reader
+  namespace: kube-public
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  resourceNames:
+  - oidc-storage-provider-s3-config
+  verbs:
+  - get
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
 metadata:
   name: cluster-provisioner-rb
   namespace: clusters
@@ -48,4 +83,34 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: cluster-provisioner
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cluster-provisioner-rb
+  namespace: tenant-space
+subjects:
+- kind: ServiceAccount
+  name: cluster-provisioner
+  namespace: tenant-space
+roleRef:
+  kind: ClusterRole
+  name: cluster-provisioner
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: oidc-configmap-reader-rb
+  namespace: kube-public
+subjects:
+- kind: Group
+  name: system:serviceaccounts
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: oidc-configmap-reader
   apiGroup: rbac.authorization.k8s.io

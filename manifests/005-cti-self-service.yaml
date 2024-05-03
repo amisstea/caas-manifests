@@ -1,0 +1,19 @@
+---
+apiVersion: clustertemplate.openshift.io/v1alpha1
+kind: ClusterTemplateInstance
+metadata:
+  name: amisstea-self-service-cluster
+  namespace: tenant-space
+spec:
+  clusterTemplateRef: hypershift-aws-self-service-template
+  parameters:
+    - name: baseDomain
+      value: eaasdemo.com
+    - name: region
+      value: us-east-2
+    - name: secret
+      value: hypershift-self-service
+    - name: instanceType
+      value: m6g.large
+    - name: version
+      value: "4.15.6"
