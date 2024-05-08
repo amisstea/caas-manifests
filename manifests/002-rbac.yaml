@@ -34,18 +34,21 @@ kind: ClusterRole
 metadata:
   name: cluster-provisioner
 rules:
+# The hypershift CLI applies some labels on the namespace
 - apiGroups:
   - ""
   resources:
   - namespaces
   verbs:
   - patch
+# The user and hypershift CLI require CRUD for secrets
 - apiGroups:
   - ""
   resources:
   - secrets
   verbs:
   - "*"
+# Grant full control of hypershift resources
 - apiGroups:
   - hypershift.openshift.io
   resources:
@@ -53,6 +56,21 @@ rules:
   - nodepools
   verbs:
   - "*"
+# Grant full control of ClusterTemplateInstances
+- apiGroups:
+  - clustertemplate.openshift.io
+  resources:
+  - clustertemplateinstances
+  verbs:
+  - "*"
+# Allow looking up available ClusterTemplates
+- apiGroups:
+  - clustertemplate.openshift.io
+  resources:
+  - clustertemplates
+  verbs:
+  - get
+  - list
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
